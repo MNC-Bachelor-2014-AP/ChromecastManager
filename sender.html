@@ -109,7 +109,7 @@ function sessionListener(e) {
 			});
 		
     // 아래 값은 상황에 맞게 변경할 것
-    url = "ws://192.168.1.202:8080";
+    url = "ws://mmesh.pusan.ac.kr:8080";
     w = new WebSocket(url);
  
     w.onopen = function() {
@@ -162,10 +162,7 @@ function sessionListener(e) {
 				playlistopen=false;
 			}
         }
-		document.getElementById("YTBButton").onclick = function() {
-            console.log(document.getElementById("inputMessage").value);
-            w.send('sender@Qurl@http://www.youtube.com/embed/' + document.getElementById("inputMessage").value);
-        }
+	
 		document.getElementById("EmptyButton").onclick = function() {
             console.log(document.getElementById("inputMessage").value);
             w.send('sender@empty@' + document.getElementById("inputMessage").value);
@@ -176,6 +173,7 @@ function sessionListener(e) {
 			  $("#jqxWidget").jqxListBox('removeItem', selectedItem);
         }
 		document.getElementById("editsend").onclick = function() {
+			w.send('sender@clear');
 			var items = $("#jqxWidget").jqxListBox('getItems'); 
 			for(var i=0;i<items.length;i++) {
 				w.send('sender@edit@'+items[i].value);
@@ -201,7 +199,7 @@ function sessionListener(e) {
 <input type="text" id="inputMessage" value=""  style="width:500px;">
 <button id="sendButton">Send</button>
 </br>
-<button id="YTBButton">YouTube</button>
+
 <button id="quickButton">Play</button>
 <button id="PlayList">PlayList</button>
 <button id="EmptyButton">Empty</button>
