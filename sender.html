@@ -12,7 +12,7 @@
 	 position: fixed;
 	 bottom:	60px;
 	left: 50%;
-	margin-left: -100px;
+	margin-left: -200px;
 }
 
 </STYLE>
@@ -87,7 +87,7 @@ function sessionListener(e) {
 	 var source = [];
 	 var selectedItem;
 	 $(document).ready(function () {
-	     $("#jqxWidget").jqxListBox({ selectedIndex: 3, source: source, width: 200, height: 250, allowDrag:true 
+	     $("#jqxWidget").jqxListBox({ selectedIndex: 3, source: source, width: 400, height: 250, allowDrag:true 
 		
 				});
 				
@@ -97,9 +97,14 @@ function sessionListener(e) {
 				if (args) {
 					var index = args.index;
 					var item = args.item;
+					
 					selectedItem=item.value;
+					var temp=selectedItem.split('#');
 					console.log(index);
 					console.log(item.value);
+					document.getElementById("editText").value=temp[0];
+					document.getElementById("editTime").value=temp[1];
+					document.getElementById("editTop").value=temp[2];
 					}
 				});
 				$("#jqxWidget").on('dragStart', function (event) {
@@ -109,7 +114,7 @@ function sessionListener(e) {
 			});
 		
     // 아래 값은 상황에 맞게 변경할 것
-    url = "ws://mmesh.pusan.ac.kr:8080";
+    url = "ws://localhost:8080";
     w = new WebSocket(url);
  
     w.onopen = function() {
@@ -137,14 +142,35 @@ function sessionListener(e) {
  
     window.onload = function() {
        	$('#content').hide();	
+		//var youtube = urlString.indexOf('youtube');
+		
         document.getElementById("sendButton").onclick = function() {
+			var time=document.getElementById("timesetting").value;
+			var url=document.getElementById("inputMessage").value;
+			var httpCheck = url.indexOf('http');
+			if(time ==="") 
+				time=10;
+			if(httpCheck === -1) 
+				url='http://'+url;
             console.log(document.getElementById("inputMessage").value);
-            w.send('sender@url@' + document.getElementById("inputMessage").value);
+            w.send('sender@url@' + url+'#'+time+'#0');
+			document.getElementById("timesetting").value='';
+			document.getElementById("inputMessage").value='';
 		
         }
 		document.getElementById("quickButton").onclick = function() {
+            var time=document.getElementById("timesetting").value;
+			var url=document.getElementById("inputMessage").value;
+			var httpCheck = url.indexOf('http');
+			if(time ==="") 
+				time=10;
+			if(httpCheck === -1) 
+				url='http://'+url;
             console.log(document.getElementById("inputMessage").value);
-            w.send('sender@quick@' + document.getElementById("inputMessage").value);
+            w.send('sender@quick@' + url+'#'+time+'#0');
+			document.getElementById("timesetting").value='';
+			document.getElementById("inputMessage").value='';
+            
         }
 		document.getElementById("PlayList").onclick = function() {
 			if(playlistopen===false) {
@@ -173,8 +199,8 @@ function sessionListener(e) {
 			  $("#jqxWidget").jqxListBox('removeItem', selectedItem);
         }
 		document.getElementById("editsend").onclick = function() {
-			w.send('sender@clear');
 			var items = $("#jqxWidget").jqxListBox('getItems'); 
+			w.send('sender@clear');
 			for(var i=0;i<items.length;i++) {
 				w.send('sender@edit@'+items[i].value);
 			}
@@ -184,30 +210,60 @@ function sessionListener(e) {
         }
 		document.getElementById("close").onclick = function() {
 			$('#content').hide();
+			 valueClear();
 			$("#jqxWidget").jqxListBox('clear'); 
 			playlistopen=false;
         }
+		document.getElementById("scrolldown").onclick = function() {
+			w.send('sender@scrolldown');
+        }
+		document.getElementById("scrollup").onclick = function() {
+			w.send('sender@scrollup');
+        }
+		document.getElementById("edit").onclick = function() {
+			var newItem=
+			document.getElementById("editText").value+'#'+
+					document.getElementById("editTime").value+'#'+
+					document.getElementById("editTop").value;
+			 $("#jqxWidget").jqxListBox('updateItem', newItem,selectedItem);
+			 valueClear();
+        }
     }
 		
-
+function valueClear() {
+					document.getElementById("editText").value="";
+					document.getElementById("editTime").value="";
+					document.getElementById("editTop").value="";
+}
           
    
 </script>
  <div id="send">
  <img src="sendertitle.png" id="senderTitle"  />
  </br>
-<input type="text" id="inputMessage" value=""  style="width:500px;">
+ <input type="text" id="timesetting" placeholder="웹페이지일 경우 재생시간을 입력하세요 (단위:초)" value=""  style="width:300px;">
+ </br>
+<input type="text" id="inputMessage" placeholder="동영상, youTube, 웹페이지 url을 입력하세요" value=""  style="width:500px;">
 <button id="sendButton">Send</button>
 </br>
 
 <button id="quickButton">Play</button>
 <button id="PlayList">PlayList</button>
 <button id="EmptyButton">Empty</button>
- 
+ </br>
+ <button id="scrollup">ScrollUp</button>
+  <button id="scrolldown">ScrollDown</button>
    <div id='content'>
+  
+			
         <span src="playlist.png" id="senderTitle"  />
-
+		 <div id='editurl'>
+			<input type="text" id="editText"  placeholder="주소" value=""  style="width:250px;" >
+			<input type="text" id="editTime" placeholder="재생시간" value=""  style="width:52px;">
+			<input type="text" id="editTop" placeholder="스크롤" value=""  style="width:52px;">
+			<button id="edit">Edit</button>
         <div id='jqxWidget'>
+			
         </div>
 		<div id='listbutton'>
 			</br>
@@ -215,6 +271,7 @@ function sessionListener(e) {
 			<button id="delete">Delete</button>
 			<button id="close">Close</button>
         </div>
+
     </div>
 	
  </div>
