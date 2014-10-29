@@ -82,7 +82,7 @@ function sessionListener(e) {
   }
 }
 
- 
+	var scrolltemp;
 	var playlistopen=false;
 	 var source = [];
 	 var selectedItem;
@@ -104,7 +104,7 @@ function sessionListener(e) {
 					console.log(item.value);
 					document.getElementById("editText").value=temp[0];
 					document.getElementById("editTime").value=temp[1];
-					document.getElementById("editTop").value=temp[2];
+					scrolltemp=temp[2];
 					}
 				});
 				$("#jqxWidget").on('dragStart', function (event) {
@@ -224,7 +224,7 @@ function sessionListener(e) {
 			var newItem=
 			document.getElementById("editText").value+'#'+
 					document.getElementById("editTime").value+'#'+
-					document.getElementById("editTop").value;
+					scrolltemp;
 			 $("#jqxWidget").jqxListBox('updateItem', newItem,selectedItem);
 			 valueClear();
         }
@@ -260,7 +260,7 @@ function valueClear() {
 		 <div id='editurl'>
 			<input type="text" id="editText"  placeholder="林家" value=""  style="width:250px;" >
 			<input type="text" id="editTime" placeholder="犁积矫埃" value=""  style="width:52px;">
-			<input type="text" id="editTop" placeholder="胶农费" value=""  style="width:52px;">
+			
 			<button id="edit">Edit</button>
         <div id='jqxWidget'>
 			
